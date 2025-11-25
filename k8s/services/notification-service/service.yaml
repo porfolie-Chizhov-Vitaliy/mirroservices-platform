@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8083"
+spec:
+  type: NodePort  # Для доступа извне (Postman)
+  selector:
+    app: notification-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+      nodePort: 30083  # Будет доступен на localhost:30083

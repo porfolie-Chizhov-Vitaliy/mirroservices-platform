@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: balance-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: balance-postgres
+  template:
+    metadata:
+      labels:
+        app: balance-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_DB
+              value: "balance_db"
+            - name: POSTGRES_USER
+              value: "balance_user"
+            - name: POSTGRES_PASSWORD
+              value: "balance_password"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: balance-postgres-pvc
