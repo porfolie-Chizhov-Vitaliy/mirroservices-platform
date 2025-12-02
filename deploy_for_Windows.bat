@@ -22,45 +22,24 @@ set NAMESPACE=test-dbo-system
 echo create namespace test-dbo-system...
 kubectl create namespace %NAMESPACE% --dry-run=client -o yaml | kubectl apply -f -
 
-echo apply payment-postgres...
-kubectl apply -f k8s/databases/payment-postgres/ -n %NAMESPACE%
-
-echo apply balance-postgres...
-kubectl apply -f k8s/databases/balance-postgres/ -n %NAMESPACE%
-
-echo apply notification-postgres... 
-kubectl apply -f k8s/databases/notification-postgres/ -n %NAMESPACE%
-
-
-echo  apply zookeeper... 
-kubectl apply -f k8s/message-brokers/zookeeper/ -n %NAMESPACE%
-echo  apply kafka... 
-kubectl apply -f k8s/message-brokers/kafka/ -n %NAMESPACE%
-
-echo  apply Prometheus... 
-kubectl create serviceaccount prometheus-sa -n test-dbo-system
-kubectl apply -f k8s/monitoring/prometheus/ -n %NAMESPACE%
-
-echo  apply Grafana  with Kustomize... 
-kubectl apply -k k8s/monitoring/grafana/ -n %NAMESPACE%
-
-echo  apply Redis... 
-kubectl apply -f k8s/caches/redis/ -n %NAMESPACE%
+call :applyResource "Payment DB" k8s/databases/payment-postgres/
+call :applyResource "Balance DB" k8s/databases/balance-postgres/
+call :applyResource "Notification DB" k8s/databases/notification-postgres/
+call :applyResource "Zookeeper" k8s/message-brokers/zookeeper/
+call :applyResource "Kafka" k8s/message-brokers/kafka/
+kubectl create serviceaccount prometheus-sa -n %NAMESPACE%
+call :applyResource "Prometheus" k8s/monitoring/prometheus/
+call :applyResource "Grafana"  "-k" "k8s/monitoring/grafana/"
+call :applyResource "Redis" k8s/caches/redis/
 
 echo   Ожидание запуска Базы данных... 
 timeout /t 15 /nobreak
 
 echo   Deploy Java-приложениий ... 
 
-echo  apply payment-service... 
-kubectl apply -f k8s/services/payment-service -n %NAMESPACE%
-
-
-echo  apply balance-service... 
-kubectl apply -f k8s/services/balance-service -n %NAMESPACE%
-
-echo  apply notification-service... 
-kubectl apply -f k8s/services/notification-service -n %NAMESPACE%
+call :applyResource "Payment Service" k8s/services/payment-service
+call :applyResource "Balance Service" k8s/services/balance-service
+call :applyResource "Notification Service" k8s/services/notification-service
 
 echo  Готово! 
 
@@ -75,26 +54,51 @@ timeout /t 5 /nobreak
 
 
 
-set URLs[0]=http://localhost:30081
-set URLs[1]=http://localhost:30082
-set URLs[2]=http://localhost:30083
-set URLs[3]=http://localhost:30090
-set URLs[4]=http://localhost:30300
+echo  Swagger UI Payment API (платежи)
+echo  http://localhost:30081/swagger-ui/index.html
+start "" "http://localhost:30081/swagger-ui/index.html"
+timeout /t 1 /nobreak >nul
 
-set Desc[0]=Payment API (платежи)
-set Desc[1]=Balance API (балансы)
-set Desc[2]=Notification API (уведомления)
-set Desc[3]=Prometheus (метрики)
-set Desc[4]=Grafana (мониторинг)
+echo  Swagger UI Balance API (балансы)
+echo  http://localhost:30082/swagger-ui/index.html
+start "" "http://localhost:30082/swagger-ui/index.html"
+timeout /t 1 /nobreak >nul
 
+echo  Swagger UI Notification API (уведомления)
+echo  http://localhost:30083/swagger-ui/index.html
+start "" "http://localhost:30083/swagger-ui/index.html"
+timeout /t 1 /nobreak >nul
 
+echo  Prometheus (метрики)
+echo  http://localhost:30090
+start "" "http://localhost:30090"
+timeout /t 1 /nobreak >nul
 
-echo Swagger UI Payment API:  http://localhost:30081/swagger-ui/index.html
-echo Swagger UI Balance API:  http://localhost:30082/swagger-ui/index.html
-echo Swagger UI Notification API:  http://localhost:30083/swagger-ui/index.html
-echo Grafana: http://localhost:30300
+echo  Grafana (мониторинг)
+echo  http://localhost:30300
+start "" "http://localhost:30300"
+timeout /t 1 /nobreak >nul
+
 echo .
 echo Grafana  login:admin password:admin
 echo Смену пароля можно пропустить.
 echo .
-pause
+echo.
+echo Нажмите любую клавишу для выхода...
+pause >nul
+exit /b
+
+:applyResource
+if "%~2"=="-k" (
+    kubectl apply -k "%~3" -n %NAMESPACE%
+) else (
+    kubectl apply -f "%~2" -n %NAMESPACE%
+)
+if errorlevel 1 (
+    echo Предупреждение: %~1
+) else (
+    echo  %~1 развернут
+)
+exit /b
+
+
