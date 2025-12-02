@@ -3,8 +3,10 @@ kind: Service
 metadata:
   name: payment-postgres
 spec:
+  type: NodePort  # Для доступа снаружи
   selector:
     app: payment-postgres
   ports:
     - port: 5432
       targetPort: 5432
+      nodePort: 30032  # Будет доступен на localhost:30300
