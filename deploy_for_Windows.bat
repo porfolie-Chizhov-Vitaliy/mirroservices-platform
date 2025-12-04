@@ -53,7 +53,6 @@ echo Открывает сервисы в браузере
 timeout /t 5 /nobreak
 
 
-
 echo  Swagger UI Payment API (платежи)
 echo  http://localhost:30081/swagger-ui/index.html
 start "" "http://localhost:30081/swagger-ui/index.html"
