@@ -1,24 +1,28 @@
 @echo off
 chcp 65001
+
+call :log "=== НАЧАЛО УСТАНОВКИ ==="
 echo ========================================
 echo    Начало развертывания test-dbo-system
 echo ========================================
 echo.
-
+call :log "Checking installing Docker"
 echo [1/3] Checking installing Docker...
 docker --version
 if errorlevel 1 (
+    call :log "ERROR: Необходимо установить Docker Desktop"
     echo ERROR: Необходимо установить Docker Desktop
     echo Ссылка на установку Docker Desktop: https://docker.com/products/docker-desktop
     pause
     exit /b 1
 ) else (
+    call :log "Docker установлен. Переходим к следующему шагу."
     echo Docker установлен. Переходим к следующему шагу.
 )
-
+call :log "Развертывание в Kubernetes test-dbo-system."
 echo [2/3] Развертывание в Kubernetes test-dbo-system...
 set NAMESPACE=test-dbo-system
-
+call :log "create namespace test-dbo-system"
 echo create namespace test-dbo-system...
 kubectl create namespace %NAMESPACE% --dry-run=client -o yaml | kubectl apply -f -
 
@@ -85,6 +89,11 @@ echo .
 echo.
 echo Нажмите любую клавишу для выхода...
 pause >nul
+exit /b
+
+
+:log
+echo [%date% %time%] %~1 >> install.log
 exit /b
 
 :applyResource
