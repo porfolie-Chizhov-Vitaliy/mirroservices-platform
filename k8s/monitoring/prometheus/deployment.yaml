@@ -13,9 +13,15 @@ spec:
         app: prometheus
     spec:
       serviceAccountName: prometheus-sa
+      securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
       containers:
         - name: prometheus
           image: prom/prometheus:latest
+          securityContext:
+           runAsNonRoot: true
           args:
             - '--config.file=/etc/prometheus/prometheus.yml'
             - '--storage.tsdb.path=/prometheus'

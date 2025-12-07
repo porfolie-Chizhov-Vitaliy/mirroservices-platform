@@ -15,6 +15,7 @@ spec:
       containers:
         - name: postgres
           image: postgres:15-alpine
+
           env:
             - name: POSTGRES_DB
               value: "balance_db"
@@ -27,6 +28,29 @@ spec:
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
+
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - balance_user
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
+          readinessProbe:
+              exec:
+                command:
+                  - pg_isready
+                  - -U
+                  - balance_user
+              initialDelaySeconds: 5
+              periodSeconds: 5
+        - name: postgres-exporter
+          image: prometheuscommunity/postgres-exporter:v0.14.0
+          env:
+            - name: DATA_SOURCE_NAME
+              value: "postgresql://balance_user:balance_password@localhost:5432/balance_db?sslmode=disable"
       volumes:
         - name: postgres-data
           persistentVolumeClaim:

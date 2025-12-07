@@ -39,7 +39,17 @@ spec:
           volumeMounts:
             - name: kafka-data
               mountPath: /var/lib/kafka/data
+
+        - name: kafka-exporter
+          image: danielqsj/kafka-exporter:v1.8.0
+          args:
+            - '--kafka.server=localhost:9092'
+          ports:
+          - containerPort: 9308
+            name: metrics
+
       volumes:
         - name: kafka-data
           persistentVolumeClaim:
             claimName: kafka-pvc
+

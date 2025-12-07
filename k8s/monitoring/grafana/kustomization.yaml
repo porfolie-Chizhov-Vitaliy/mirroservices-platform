@@ -11,5 +11,9 @@ configMapGenerator:
   - name: grafana-dashboards
     files:
       - provisioning/dashboards/dashboard-provider.yaml
-      - provisioning/dashboards/microservices-dashboard.json
-      - provisioning/dashboards/database-dashboard.json
+#      - provisioning/dashboards/microservices-dashboard.json
+#      - provisioning/dashboards/database-dashboard.json
+      - provisioning/dashboards/Docker-Desktop.json
+      - provisioning/dashboards/Java-service.json
+      - provisioning/dashboards/Kafka.json
+      - provisioning/dashboards/Postgres-and-Redis.json

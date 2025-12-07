@@ -8,25 +8,98 @@ data:
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
+    
+    scrape_configs: 
+      - job_name: 'java-services'
+        static_configs:
+          - targets:
+              - 'payment-service:8081'
+            labels:
+              service: 'payment-service'
+          - targets:
+              - 'balance-service:8082'
+            labels:
+              service: 'balance-service'
+          - targets:
+              - 'notification-service:8083'
+            labels:
+              service: 'notification-service'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 15s
+    
+      - job_name: 'postgresql'
+        static_configs:
+          - targets: ['payment-postgres:9187']
+            labels:
+              db_name: 'payment-db'
+          - targets: ['balance-postgres:9187']
+            labels:
+              db_name: 'balance-db'
+          - targets: ['notification-postgres:9187']
+            labels:
+              db_name: 'notification-db'
+        scrape_interval: 30s
+    
+      - job_name: 'node-exporter'
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - source_labels: [__address__]
+            regex: '(.*):10250'
+            replacement: '${1}:9100'
+            target_label: __address__
+    
+      
+      
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            action: keep
+            regex: '.+'
+          # Игнорировать порты без метрик
+          - source_labels: [__meta_kubernetes_pod_container_port_name]
+            regex: '(5432|6379|9092|2181)'  # порты БД, Redis, Kafka
+            action: drop
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            regex: "false"
+            action: drop
+      
+      
+   
+  
+     
+      - job_name: 'redis'
+        static_configs:
+          - targets: ['redis:9121']
+        scrape_interval: 30s
+  
+      
+      - job_name: 'kafka'
+        static_configs:
+          - targets: ['kafka-broker:9308']
+        scrape_interval: 30s
 
-    scrape_configs:
-      - job_name: 'payment-service'
-        static_configs:
-          - targets: ['payment-service:8081']
-        metrics_path: '/actuator/prometheus'
-        scrape_interval: 15s
-    
-      - job_name: 'balance-service'
-        static_configs:
-          - targets: ['balance-service:8082']
-        metrics_path: '/actuator/prometheus'
-        scrape_interval: 15s
-    
-      - job_name: 'notification-service'
-        static_configs:
-          - targets: ['notification-service:8083']
-        metrics_path: '/actuator/prometheus'
-        scrape_interval: 15s
+
+#    scrape_configs:
+#      - job_name: 'payment-service'
+#        static_configs:
+#          - targets: ['payment-service:8081']
+#        metrics_path: '/actuator/prometheus'
+#        scrape_interval: 15s
+#
+#      - job_name: 'balance-service'
+#        static_configs:
+#          - targets: ['balance-service:8082']
+#        metrics_path: '/actuator/prometheus'
+#        scrape_interval: 15s
+#
+#      - job_name: 'notification-service'
+#        static_configs:
+#          - targets: ['notification-service:8083']
+#        metrics_path: '/actuator/prometheus'
+#        scrape_interval: 15s
 #    scrape_configs:
 #    - job_name: 'JAVA-services'
 #      static_configs:

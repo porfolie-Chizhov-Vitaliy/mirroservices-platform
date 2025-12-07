@@ -32,6 +32,13 @@ spec:
               port: 6379
             initialDelaySeconds: 5
             periodSeconds: 5
+        - name: redis-exporter
+          image: bitnami/redis-exporter:latest
+          args:
+            - '--redis.addr=redis://localhost:6379'
+          ports:
+            - containerPort: 9121
+              name: metrics
       volumes:
         - name: redis-data
           persistentVolumeClaim:
