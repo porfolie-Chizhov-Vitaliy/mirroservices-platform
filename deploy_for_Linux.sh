@@ -13,8 +13,8 @@ kubectl apply -f k8s/databases/balance-postgres/ -n $NAMESPACE
 
 echo "apply notification-postgres..."
 kubectl apply -f k8s/databases/notification-postgres/ -n $NAMESPACE
-
-
+echo "apply node-exporter..."
+kubectl apply -f k8s/monitoring/node-exporter/ -n kube-system
 echo "apply zookeeper..."
 kubectl apply -f k8s/message-brokers/zookeeper/ -n $NAMESPACE
 echo "apply kafka..."
