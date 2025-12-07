@@ -7,7 +7,7 @@ echo    Deployment test-dbo-system
 echo ========================================
 echo.
 call :log "Checking installing Docker"
-echo [1/3] Checking installing Docker...
+echo [1/4] Checking installing Docker...
 docker --version
 if errorlevel 1 (
     call :log "ERROR: Необходимо установить Docker Desktop"
@@ -20,7 +20,7 @@ if errorlevel 1 (
     echo Docker install.
 )
 call :log "Развертывание в Kubernetes test-dbo-system."
-echo [2/3] Deployment Kubernetes test-dbo-system...
+echo [2/4] Deployment Kubernetes test-dbo-system...
 set NAMESPACE=test-dbo-system
 call :log "create namespace test-dbo-system"
 echo create namespace test-dbo-system...
@@ -33,24 +33,27 @@ call :applyResource "Zookeeper" k8s/message-brokers/zookeeper/
 call :applyResource "Kafka" k8s/message-brokers/kafka/
 kubectl create serviceaccount prometheus-sa -n %NAMESPACE%
 call :applyResource "Prometheus" k8s/monitoring/prometheus/
+echo apply node-exporter
+kubectl apply -f k8s/monitoring/node-exporter/ -n kube-system
 call :applyResource "Grafana"  "-k" "k8s/monitoring/grafana/"
 call :applyResource "Redis" k8s/caches/redis/
 
-echo   Ожидание запуска Базы данных... 
-timeout /t 15 /nobreak
+echo [3/4] Wait start databases...
+kubectl wait --for=condition=ready --timeout=300s pod -l "app in (payment-postgres,balance-postgres,notification-postgres)"  -n %NAMESPACE%
 
-echo   Deploy Java-приложениий ... 
+@REM timeout /t 15 /nobreak
+
+echo Deploy Java-services ...
 
 call :applyResource "Payment Service" k8s/services/payment-service
 call :applyResource "Balance Service" k8s/services/balance-service
 call :applyResource "Notification Service" k8s/services/notification-service
 
-echo  Done
+echo [4/4] Wait start Java-services...
+kubectl wait --for=condition=ready --timeout=300s pod -l "app in (payment-service,balance-service,notification-service)" -n %NAMESPACE%
 
 
-
-echo [3/3] Starting services...
-timeout /t 50 /nobreak
+@REM timeout /t 50 /nobreak
 kubectl get pods -n %NAMESPACE%
 
 echo Open links on browser
@@ -84,12 +87,11 @@ timeout /t 1 /nobreak >nul
 
 echo .
 echo Grafana  login:admin password:admin
-echo Смену пароля можно пропустить.
-echo .
+echo Change password can skip
 echo.
-echo Нажмите любую клавишу для выхода...
+echo Press any key to exit...
 pause >nul
-exit /b
+exit /
 
 
 :log
