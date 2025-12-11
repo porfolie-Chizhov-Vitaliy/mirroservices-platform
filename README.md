@@ -6,6 +6,8 @@
 
 
 ### Схема кластера:
+**pod** - название пода
+
 **image** - образ который используется в deployment
 
 **port** -  порт внутри кластера 
@@ -14,7 +16,11 @@
 
 **nodePort** - порт доступ извне кластера
 
-![kuber cluster](https://github.com/user-attachments/assets/22007291-48e0-4329-94de-bdca6476e827)
+![kuber cluster v2](https://github.com/user-attachments/assets/3cc0e27e-0332-4eba-9b36-82e6beebde26)
+
+
+
+
 
 
   
