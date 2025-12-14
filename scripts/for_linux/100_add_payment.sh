@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Создание 50 тестовых платежей..."
+echo "Создание 100 тестовых платежей..."
 
 PAYMENT_URL="http://localhost:30081/api/payments"
 CONTENT_TYPE="Content-Type: application/json"

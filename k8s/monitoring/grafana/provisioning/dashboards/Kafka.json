@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 0,
+  "id": 3,
   "links": [],
   "panels": [
     {
@@ -256,6 +256,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "скорость потребления сообщений",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -310,7 +311,32 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "balance-checks"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -342,7 +368,7 @@
           "refId": "A"
         }
       ],
-      "title": "New panel",
+      "title": "Message Consumption Rate",
       "type": "timeseries"
     }
   ],
@@ -360,5 +386,5 @@
   "timezone": "browser",
   "title": "Kafka",
   "uid": "adzgnwb",
-  "version": 5
+  "version": 1
 }

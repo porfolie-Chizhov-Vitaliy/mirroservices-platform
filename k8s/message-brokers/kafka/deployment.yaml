@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: kafka
-          image: confluentinc/cp-kafka:7.4.0  # Официальный образ
+          image: confluentinc/cp-kafka:7.4.0
           env:
             - name: KAFKA_ZOOKEEPER_CONNECT
               value: "zookeeper:2181"

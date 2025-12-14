@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 0,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -322,7 +322,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "100 - (\r\n  sum by (instance) (node_filesystem_avail_bytes{instance=\"docker-desktop\", device=~\"/dev/sd[gh]\"}) \r\n  / sum by (instance) (node_filesystem_size_bytes{instance=\"docker-desktop\", device=~\"/dev/sd[gh]\"}) * 100\r\n)",
+          "expr": "100 - ( sum by (instance) (node_filesystem_free_bytes{instance=\"docker-desktop\"}) / sum by (instance) (node_filesystem_size_bytes{instance=\"docker-desktop\"})* 100)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -339,12 +339,12 @@
     "list": []
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Docker Desktop",
   "uid": "ad9qvgq",
-  "version": 5
+  "version": 1
 }

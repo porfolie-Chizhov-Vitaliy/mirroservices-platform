@@ -30,16 +30,18 @@ call :applyResource "Payment DB" k8s/databases/payment-postgres/
 call :applyResource "Balance DB" k8s/databases/balance-postgres/
 call :applyResource "Notification DB" k8s/databases/notification-postgres/
 call :applyResource "Zookeeper" k8s/message-brokers/zookeeper/
-call :applyResource "Kafka" k8s/message-brokers/kafka/
+echo  Wait start databases and zookeeper...
+kubectl wait --for=condition=ready --timeout=300s pod -l "app in (payment-postgres,balance-postgres,notification-postgres,zookeeper)"  -n %NAMESPACE%
 kubectl create serviceaccount prometheus-sa -n %NAMESPACE%
 call :applyResource "Prometheus" k8s/monitoring/prometheus/
 echo apply node-exporter
 kubectl apply -f k8s/monitoring/node-exporter/ -n kube-system
 call :applyResource "Grafana"  "-k" "k8s/monitoring/grafana/"
 call :applyResource "Redis" k8s/caches/redis/
+call :applyResource "Kafka" k8s/message-brokers/kafka/
 
-echo [3/4] Wait start databases...
-kubectl wait --for=condition=ready --timeout=300s pod -l "app in (payment-postgres,balance-postgres,notification-postgres)"  -n %NAMESPACE%
+echo  Wait start databases and zookeeper...
+kubectl wait --for=condition=ready --timeout=300s pod -l "app in (kafka,grafana,prometheus,node-exporter)"  -n %NAMESPACE%
 
 @REM timeout /t 15 /nobreak
 
@@ -65,22 +67,22 @@ echo  http://localhost:30081/swagger-ui/index.html
 start "" "http://localhost:30081/swagger-ui/index.html"
 timeout /t 1 /nobreak >nul
 
-echo  Swagger UI Balance API (балансы)
+echo  Swagger UI Balance API (balance-service)
 echo  http://localhost:30082/swagger-ui/index.html
 start "" "http://localhost:30082/swagger-ui/index.html"
 timeout /t 1 /nobreak >nul
 
-echo  Swagger UI Notification API (уведомления)
+echo  Swagger UI Notification API (notification-service)
 echo  http://localhost:30083/swagger-ui/index.html
 start "" "http://localhost:30083/swagger-ui/index.html"
 timeout /t 1 /nobreak >nul
 
-echo  Prometheus (метрики)
+echo  Prometheus (metrics)
 echo  http://localhost:30090
 start "" "http://localhost:30090"
 timeout /t 1 /nobreak >nul
 
-echo  Grafana (мониторинг)
+echo  Grafana (monitoring)
 echo  http://localhost:30300
 start "" "http://localhost:30300"
 timeout /t 1 /nobreak >nul

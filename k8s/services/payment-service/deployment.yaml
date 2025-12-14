@@ -19,7 +19,7 @@ spec:
       containers:
         - name: payment-service
           image: chizhovvm/payment-service:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always # Всегда тянет новую версию IfNotPresent - только конкретную
           ports:
             - containerPort: 8081
           env:

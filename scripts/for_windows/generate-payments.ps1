@@ -4,9 +4,9 @@ $paymentUrl = "http://localhost:30081/api/payments"
 $fromAccounts = @("40817810099910004328", "40817810099910004324", "40817810099910004323", "40817810099910004321", "40817810099910004327")
 $toAccounts = @("40817810099910004328", "40817810099910004324", "40817810099910004323", "40817810099910004321", "40817810099910004327", "42601810500000010101")
 
-Write-Host "Создание 50 тестовых платежей..." -ForegroundColor Green
+Write-Host "Создание 100 тестовых платежей..." -ForegroundColor Green
 
-for ($i = 1; $i -le 50; $i++) {
+for ($i = 1; $i -le 100; $i++) {
     $fromAccount = $fromAccounts | Get-Random
     $toAccount = $toAccounts | Get-Random
     $amount = Get-Random -Minimum 100 -Maximum 50000

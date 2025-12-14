@@ -49,38 +49,29 @@ data:
             replacement: '${1}:9100'
             target_label: __address__
     
-      
-      
-      - job_name: 'kubernetes-pods'
-        kubernetes_sd_configs:
-          - role: pod
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_pod_container_name]
-            action: keep
-            regex: '.+'
-          # Игнорировать порты без метрик
-          - source_labels: [__meta_kubernetes_pod_container_port_name]
-            regex: '(5432|6379|9092|2181)'  # порты БД, Redis, Kafka
-            action: drop
-          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-            regex: "false"
-            action: drop
-      
-      
-   
-  
-     
       - job_name: 'redis'
         static_configs:
           - targets: ['redis:9121']
         scrape_interval: 30s
-  
-      
+   
       - job_name: 'kafka'
         static_configs:
           - targets: ['kafka-broker:9308']
         scrape_interval: 30s
-
+#  - job_name: 'kubernetes-pods'
+#      kubernetes_sd_configs:
+#        - role: pod
+#      relabel_configs:
+#        - source_labels: [__meta_kubernetes_pod_container_name]
+#          action: keep
+#          regex: '.+'
+#        # Игнорировать порты без метрик
+#        - source_labels: [__meta_kubernetes_pod_container_port_name]
+#          regex: '(5432|6379|9092|2181)'  # порты БД, Redis, Kafka
+#          action: drop
+#        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+#          regex: "false"
+#          action: drop
 
 #    scrape_configs:
 #      - job_name: 'payment-service'

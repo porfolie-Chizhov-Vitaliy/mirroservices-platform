@@ -19,7 +19,7 @@ spec:
       containers:
         - name: balance-service
           image: chizhovvm/balance-service:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always  # Всегда тянет новую версию IfNotPresent - только конкретную
           ports:
             - containerPort: 8082
           env:

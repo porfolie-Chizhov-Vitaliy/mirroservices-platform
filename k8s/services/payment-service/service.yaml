@@ -6,7 +6,7 @@ metadata:
     prometheus.io/scrape: "true"
     prometheus.io/port: "8081"
 spec:
-  type: NodePort  # Для доступа извне (Postman)
+  type: NodePort  # Для доступа извне
   selector:
     app: payment-service
   ports:
